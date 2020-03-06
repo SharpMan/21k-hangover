@@ -1,3 +1,4 @@
+import random
 
 DECK_OF_CARDS = [
   '1', '1', '1', '1',
@@ -33,12 +34,21 @@ CARD_VALUES = {
   'A': (1, 11),
 }
 
-class blackjack():
+class BlackJack():
   
   def __init__(self):
-    #self.deck = newDeck()
+    self.deck = self.new_deck()
     self.player_hand = []
     self.dealer_hand = []
 
+  def new_deck(self) -> list:
+    deck = DECK_OF_CARDS.copy()
+    new_deck = []   
 
-game = blackjack()
+    while (len(deck) > 0):
+      new_deck.append(deck.pop(random.randint(0,len(deck)-1)))
+
+    return new_deck
+
+game = BlackJack()
+print(game.deck)
