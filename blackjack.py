@@ -103,19 +103,46 @@ class BlackJack():
     if(len(self.deck) <= 0): self.deck = self.new_deck()
   
     self.player_hand.append(self.deck.pop())
+    hand_sum = self.get_hand()
+                 
+    if(len(hand_sum) == 2):
+      if(hand_sum[1] == 21): 
+        return False
+
+    if(hand_sum[0] < 21):
+      return True
+    else:
+      return False
+
+  
 
 
 
 game = BlackJack()
 print(game.deck)
 game.deal()
-print(game.player_hand)
-print(game.dealer_hand)
+print("dealer: " + str(game.dealer_hand[1]))
 
+
+print(str(game.player_hand) + ": ", end='')
 hand_sum = game.get_hand()
 if(len(hand_sum) == 2):
   print(hand_sum[0], hand_sum[1])
 else:
   print(hand_sum[0])
 
+while(game.hit()):
+  print(str(game.player_hand) + ": ", end='')
+  hand_sum = game.get_hand()
+  if(len(hand_sum) == 2):
+    print(hand_sum[0], hand_sum[1])
+  else:
+    print(hand_sum[0])
+
+print(str(game.player_hand) + ": ", end='')
+hand_sum = game.get_hand()
+if(len(hand_sum) == 2):
+  print(hand_sum[0], hand_sum[1])
+else:
+  print(hand_sum[0])
 
