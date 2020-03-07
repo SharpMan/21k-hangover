@@ -66,9 +66,15 @@ class BlackJack():
 
     return new_deck
 
+  def reset(self):
+    self.player_hand = []
+    self.dealer_hand = []
+    self.round = None
+    self.status = None
 
-  def deal(self) -> Status:
-    
+  def deal(self) -> Status:    
+    self.reset()
+
     cards_dealt = 0
     player_turn = 0
     while(cards_dealt < 2*self.num_of_players ): 
@@ -118,14 +124,16 @@ class BlackJack():
 
 
   def hit(self) -> Status:
-    if(self.status != Status.GOOD): return
+    if(self.status != Status.GOOD): return self.status
     if(len(self.deck) <= 0): self.deck = self.new_deck()
   
     self.player_hand.append(self.deck.pop())
-    hand_sum = self.get_hand()
-                 
     
-    if(hand_sum[0] < 21):
+    if(max(self.get_hand()) == 21):
+      self.status = Status.STAND
+      self._dealer_reveal()
+      return Status.STAND
+    elif(max(self.get_hand()) < 21):
       return Status.GOOD
     else:
       self.status = Status.BUST
@@ -159,8 +167,8 @@ class BlackJack():
       self.round = Round.LOSE
       return
 
-    player_best = max(player_hand_sum)
     dealer_best = max(dealer_hand_sum)
+    player_best = max(player_hand_sum)
     while(dealer_best < player_best):
       if(len(self.deck) <= 0): self.deck = self.new_deck()
 
@@ -177,36 +185,5 @@ class BlackJack():
       self.round = Round.TIE
     else:
       self.round = Round.LOSE
-
-
     return
-
-    
-
-game = BlackJack()
-print(game.deck)
-game.deal()
-print("dealer: " + str(game.dealer_hand))
-
-game.stand()
-print(str(game.player_hand) + ": ", end='')
-hand_sum = game.get_hand()
-for hand in hand_sum:
-  print(hand, end=' ')
-print()
-
-while(game.hit() == Status.GOOD):
-  print(str(game.player_hand) + ": ", end='')
-  hand_sum = game.get_hand()
-  for hand in hand_sum:
-    print(hand, end=' ')
-  print()
-
-print(game.status)
-
-print(game.round)
-print(str(game.player_hand) + ": ", end='')
-print(max(game.get_hand()))
-print(str(game.dealer_hand) + ": ", end='')
-print(max(game.count_hand(game.dealer_hand)))
 
