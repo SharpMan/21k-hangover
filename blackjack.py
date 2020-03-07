@@ -1,4 +1,5 @@
 import random
+from enum import Enum
 
 DECK_OF_CARDS = [
   '1', '1', '1', '1',
@@ -34,6 +35,17 @@ CARD_VALUES = {
   'A': [1, 11],
 }
 
+class Status(Enum):
+  BUST = 0
+  GOOD = 1
+  STAND = 2
+  BLACKJACK = 3
+
+class Round(Enum):
+  LOSE = 0
+  WIN = 1
+  TIE = 2
+
 class BlackJack():
   
   def __init__(self):
@@ -41,7 +53,8 @@ class BlackJack():
     self.num_of_players = 2
     self.player_hand = []
     self.dealer_hand = []
-    self.dealt = False
+    self.round = None
+    self.status = None
 
 
   def new_deck(self) -> list:
@@ -54,8 +67,7 @@ class BlackJack():
     return new_deck
 
 
-  def deal(self) -> bool:
-    if(self.dealt): return False
+  def deal(self) -> Status:
     
     cards_dealt = 0
     player_turn = 0
@@ -73,8 +85,14 @@ class BlackJack():
 
       cards_dealt += 1
 
-    self.dealt = True
-    return True
+    if(21 in self.get_hand()):
+      self.status = Status.BLACKJACK
+      self._dealer_reveal()
+      return self.status
+    else:
+      self.status = Status.GOOD
+      return self.status
+
 
 
   def count_hand(self, hand: list) -> int:
@@ -99,50 +117,96 @@ class BlackJack():
     return self.count_hand(self.player_hand)
 
 
-  def hit(self) -> bool:
+  def hit(self) -> Status:
+    if(self.status != Status.GOOD): return
     if(len(self.deck) <= 0): self.deck = self.new_deck()
   
     self.player_hand.append(self.deck.pop())
     hand_sum = self.get_hand()
                  
-    if(len(hand_sum) == 2):
-      if(hand_sum[1] == 21): 
-        return False
-
+    
     if(hand_sum[0] < 21):
-      return True
+      return Status.GOOD
     else:
-      return False
+      self.status = Status.BUST
+      self._dealer_reveal()
+      return Status.BUST
 
-  
+
+  def stand(self):
+    if(self.status != Status.GOOD): return
+    self.status = Status.STAND
+    self._dealer_reveal()
+    
+
+  def _dealer_reveal(self):
+    
+    # Check if player busted
+    if(self.status == Status.BUST):
+      self.round = Round.LOSE    
+      return
+     
+    dealer_hand_sum = self.count_hand(self.dealer_hand)
+    player_hand_sum = self.count_hand(self.player_hand)
+    # Check if both player and dealer for a natural blackjack
+    if(self.status == Status.BLACKJACK and 21 in dealer_hand_sum):
+      self.round = Round.TIE
+      return 
+    elif(self.status == Status.BLACKJACK):
+      self.round = Round.WIN
+      return
+    elif(21 in dealer_hand_sum):
+      self.round = Round.LOSE
+      return
+
+    player_best = max(player_hand_sum)
+    dealer_best = max(dealer_hand_sum)
+    while(dealer_best < player_best):
+      if(len(self.deck) <= 0): self.deck = self.new_deck()
+
+      self.dealer_hand.append(self.deck.pop())
+      dealer_best = max(self.count_hand(self.dealer_hand))
+
+    # Check if dealer busted
+    if(dealer_best > 21):
+      self.round = Round.WIN
+      return 
+
+    # Check both hands
+    if(dealer_best == player_best):
+      self.round = Round.TIE
+    else:
+      self.round = Round.LOSE
 
 
+    return
+
+    
 
 game = BlackJack()
 print(game.deck)
 game.deal()
-print("dealer: " + str(game.dealer_hand[1]))
+print("dealer: " + str(game.dealer_hand))
 
-
+game.stand()
 print(str(game.player_hand) + ": ", end='')
 hand_sum = game.get_hand()
-if(len(hand_sum) == 2):
-  print(hand_sum[0], hand_sum[1])
-else:
-  print(hand_sum[0])
+for hand in hand_sum:
+  print(hand, end=' ')
+print()
 
-while(game.hit()):
+while(game.hit() == Status.GOOD):
   print(str(game.player_hand) + ": ", end='')
   hand_sum = game.get_hand()
-  if(len(hand_sum) == 2):
-    print(hand_sum[0], hand_sum[1])
-  else:
-    print(hand_sum[0])
+  for hand in hand_sum:
+    print(hand, end=' ')
+  print()
 
+print(game.status)
+
+print(game.round)
 print(str(game.player_hand) + ": ", end='')
-hand_sum = game.get_hand()
-if(len(hand_sum) == 2):
-  print(hand_sum[0], hand_sum[1])
-else:
-  print(hand_sum[0])
+print(max(game.get_hand()))
+print(str(game.dealer_hand) + ": ", end='')
+print(max(game.count_hand(game.dealer_hand)))
 
