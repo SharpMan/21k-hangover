@@ -123,6 +123,11 @@ class BlackJack():
     return self.count_hand(self.player_hand)
 
 
+  def get_face(self) -> chr:
+    if(len(self.dealer_hand) < 2): return -1
+    return self.dealer_hand[1]
+
+
   def hit(self) -> Status:
     if(self.status != Status.GOOD): return self.status
     if(len(self.deck) <= 0): self.deck = self.new_deck()
