@@ -137,4 +137,3 @@ test_deal()
 test_hit()
 test_count_hand()
 test_dealer_reveal()
-
