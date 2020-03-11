@@ -48,6 +48,9 @@ class Round(Enum):
     WIN = 1
     TIE = 2
 
+class Action(Enum):
+    HIT = 0
+    STAY = 1
 
 class BlackJack():
 
@@ -67,6 +70,11 @@ class BlackJack():
             new_deck.append(deck.pop(random.randint(0, len(deck) - 1)))
 
         return new_deck
+
+    def get_state(self):
+        player_hand = self.get_hand()
+        usable_ace_flag = (len(player_hand) > 1)
+        return (max(player_hand), usable_ace_flag, self.get_face())
 
     def reset(self):
         self.player_hand = []
@@ -144,7 +152,7 @@ class BlackJack():
             self._dealer_reveal()
             return Status.BUST
 
-    def stand(self):
+    def stay(self):
         if (self.status != Status.GOOD): return
         self.status = Status.STAND
         self._dealer_reveal()

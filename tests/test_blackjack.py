@@ -10,9 +10,14 @@ def test_deal():
   game.deck = ['2', 'Q', '1', 'A']
   assert(game.deal() == BJ.Status.BLACKJACK)
 
+  #Player has 21 total, True for UsableAce and Dealer has an '1' faced-up
+  assert(game.get_state() == (21, True, '1'))
+
   # Test for good hand
   game.deck = ['3', '1', 'Q', '2']
   assert(game.deal() == BJ.Status.GOOD)
+  print(game.get_state())
+  assert (game.get_state() == (3, False, 'Q'))
 
 
 def test_hit():
