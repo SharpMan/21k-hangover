@@ -7,9 +7,9 @@ class QLearning():
 
     def __init__(self):
         self.Q = {}
-        self._learning_rate = .7  # gamma
-        self._discount = .9       # tetha
-        self._epsilon = 0.2
+        self._alpha = .2           #learning rate
+        self._gamma = .9           #discount factor
+        self._epsilon = .2         #exploration probability
 
     def get_action(self, current_state):
         if (current_state in self.Q and np.random.uniform(0, 1) < self._epsilon):
@@ -22,12 +22,13 @@ class QLearning():
 
         return action
 
-    def update_table(self, old_state, action, new_state, reward):
+    def learn(self, old_state, action, new_state, reward):
         cur_reward = self._Q[old_state][action]
-
         bonus = 0
-        if new_state in self._Q:
-            bonus = self._discount * self._Q[new_state][max(self._Q[new_state], key=self._Q[new_state].get)]
 
-        self._Q[old_state][action] = (1- self._learning_rate) * cur_reward + self._learning_rate*(reward+ bonus)
+        if new_state in self._Q:
+            max_arg = max(self._Q[new_state], key=self._Q[new_state].get)
+            bonus = self._gamma * self._Q[new_state][max_arg]
+
+        self._Q[old_state][action] = cur_reward + (self._alpha * (reward + bonus - cur_reward))
 
