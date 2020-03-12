@@ -1,4 +1,5 @@
 from blackjack import Action
+from blackjack import Round
 
 PLAYER_COUNT = list(range(2, 22))
 DEALER_COUNT = list(range(1,12))
@@ -15,6 +16,9 @@ class QRewardTable:
                     states.append((player_count, usable_ace, dealer_count))
         #list comprehension below constructs a "states" length list of lists of the form [0,0] 
         self.table = dict(zip(states, [ [0]*2 for _ in range(len(states))]))
+        self.table[Round.LOSE] = [0][0]
+        self.table[Round.TIE] = [1][1]
+        self.table[Round.WIN]  = [2][2]
 
 
 class TDRewardTable:
@@ -26,5 +30,7 @@ class TDRewardTable:
                     states.append((player_count, usable_ace, dealer_count))
         #list comprehension below constructs a states length list of 0's
         self.table = dict(zip(states, [ 0 for _ in range(len(states))]))
-
+        self.table[Round.LOSE] = 0
+        self.table[Round.TIE] = 1
+        self.table[Round.WIN]  = 2
 
