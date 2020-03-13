@@ -17,11 +17,12 @@ def test_train_ql():
 
         # Agent turn
         while(game.round is None):
+            #When action  return STAND or BUST the loop should exit
             action = learning_agent.get_action(game.get_state())
             if(action == BJ.Action.HIT):
-                game.hit()
+                status = game.hit() #Can hit 1 2
             else:
-                game.stay()
+                status= game.stand()
 
         
 

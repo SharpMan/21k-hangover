@@ -141,7 +141,7 @@ class BlackJack():
 
         self.player_hand.append(self.deck.pop())
 
-        if (max(self.get_hand()) == 21):
+        if (max(self.get_hand()) == 21): #can't get more card
             self.status = Status.STAND
             self._dealer_reveal()
             return Status.STAND
@@ -152,10 +152,11 @@ class BlackJack():
             self._dealer_reveal()
             return Status.BUST
 
-    def stay(self):
-        if (self.status != Status.GOOD): return
+    def stand(self) -> Status:
+        if (self.status != Status.GOOD): return Status
         self.status = Status.STAND
         self._dealer_reveal()
+        return self.status
 
     def _dealer_reveal(self):
 
