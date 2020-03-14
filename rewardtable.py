@@ -16,8 +16,8 @@ class QRewardTable:
                     states.append((player_count, usable_ace, dealer_count))
         #list comprehension below constructs a "states" length list of lists of the form [0,0] 
         self.table = dict(zip(states, [ dict({Action.HIT: 0, Action.STAY: 0}) for _ in range(len(states))]))
-        self.table[Round.LOSE] = dict({Action.HIT: 0, Action.STAY: 0})
-        self.table[Round.TIE] = dict({Action.HIT: 1, Action.STAY: 1})
+        self.table[Round.LOSE] = dict({Action.HIT: -2, Action.STAY: -2})
+        self.table[Round.TIE] = dict({Action.HIT: 0, Action.STAY: 0})
         self.table[Round.WIN]  = dict({Action.HIT: 2, Action.STAY: 2})
 
 

@@ -21,15 +21,14 @@ class QLearning():
             #self.Q.table[current_state][action] = 0
         return action
 
-    def learn(self, old_state, action, new_state):
+    def learn(self, old_state, action, new_state, reward):
         cur_reward = self.Q.table[old_state][action]
         bonus = 0
-
         #if new_state in self.Q.table:
         max_arg = max(self.Q.table[new_state], key=self.Q.table[new_state].get)
         bonus = self._gamma * self.Q.table[new_state][max_arg]
 
-        self.Q.table[old_state][action] = cur_reward + (self._alpha * (bonus - cur_reward))
+        self.Q.table[old_state][action] = cur_reward + (self._alpha * (reward + bonus - cur_reward))
 
     def train(self, episodes):
         game = BlackJack()
@@ -40,7 +39,6 @@ class QLearning():
         for i in range(episodes):
             status = game.deal()
             if(status is Status.BLACKJACK):
-                #print("BlackJack")
                 continue
             # Agent turn
             while game.round is None:
@@ -54,9 +52,10 @@ class QLearning():
                 
                 if game.round is None:
                     new_state = game.get_state()
+                    self.learn(cur_state, action, new_state, 0)
                 else:
-                    new_state = game.round
-                self.learn(cur_state, action, new_state)
+                    reward_state = game.round
+                    self.learn(cur_state, action, cur_state, self.Q.table[reward_state][action])
 
             if game.round == Round.WIN:
                 win += 1
@@ -89,12 +88,6 @@ class QLearning():
                     game.hit()
                 else:
                     game.stay()
-                
-                if game.round is None:
-                    new_state = game.get_state()
-                else:
-                    new_state = game.round
-                self.learn(cur_state, action, new_state)
 
             if game.round == Round.WIN:
                 win += 1
