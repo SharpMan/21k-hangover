@@ -6,14 +6,14 @@ from blackjack import Action
 class QLearning():
 
     def __init__(self):
-        self.Q = {}
+        self._Q = {}
         self._alpha = .2           #learning rate
         self._gamma = .9           #discount factor
         self._epsilon = .2         #exploration probability
 
-    def get_action(self, current_state):
-        if (current_state in self.Q and np.random.uniform(0, 1) < self._epsilon):
-            action = max(self.Q[current_state], key=self.Q[current_state].get)
+    def get_action(self, current_state, is_training=True):
+        if (not is_training or (current_state in self._Q and np.random.uniform(0, 1) < self._epsilon)):
+            action = max(self._Q[current_state], key=self._Q[current_state].get)
         else:
             action = np.random.choice([Action.HIT, Action.STAY])
             if current_state not in self._Q:
