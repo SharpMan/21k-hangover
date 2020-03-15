@@ -2,7 +2,6 @@ import random
 from enum import Enum
 
 DECK_OF_CARDS = [
-    '1', '1', '1', '1',
     '2', '2', '2', '2',
     '3', '3', '3', '3',
     '4', '4', '4', '4',
@@ -19,7 +18,6 @@ DECK_OF_CARDS = [
 ]
 
 CARD_VALUES = {
-    '1': [1],
     '2': [2],
     '3': [3],
     '4': [4],
@@ -74,7 +72,7 @@ class BlackJack():
     def get_state(self):
         player_hand = self.get_hand()
         usable_ace_flag = (len(player_hand) > 1)
-        return (max(player_hand), usable_ace_flag, self.get_face())
+        return (max(player_hand), usable_ace_flag, CARD_VALUES[self.get_face()][0])
 
     def reset(self):
         self.player_hand = []

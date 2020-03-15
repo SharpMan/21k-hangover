@@ -9,7 +9,7 @@ class QLearning():
         self._Q = {}
         self._alpha = .2           #learning rate
         self._gamma = .9           #discount factor
-        self._epsilon = .2         #exploration probability
+        self._epsilon = .3         #exploration probability
 
     def get_action(self, current_state, is_training=True):
         if (not is_training or (current_state in self._Q and np.random.uniform(0, 1) < self._epsilon)):
@@ -18,7 +18,8 @@ class QLearning():
             action = np.random.choice([Action.HIT, Action.STAY])
             if current_state not in self._Q:
                 self._Q[current_state] = {}
-            self._Q[current_state][action] = 0
+            if action not in self._Q[current_state]:
+                self._Q[current_state][action] = 0
 
         return action
 
