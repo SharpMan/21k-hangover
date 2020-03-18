@@ -178,7 +178,7 @@ class BlackJack():
 
         dealer_best = max(dealer_hand_sum)
         player_best = max(player_hand_sum)
-        while (dealer_best < player_best):
+        while (dealer_best < player_best and dealer_best < 17):
             if (len(self.deck) <= 0): self.deck = self.new_deck()
 
             self.dealer_hand.append(self.deck.pop())
@@ -188,9 +188,10 @@ class BlackJack():
         if (dealer_best > 21):
             self.round = Round.WIN
             return
-
         # Check both hands
-        if (dealer_best == player_best):
+        if(player_best > dealer_best):
+            self.round = Round.WIN
+        elif (dealer_best == player_best):
             self.round = Round.TIE
         else:
             self.round = Round.LOSE

@@ -6,12 +6,12 @@ sys.path.append('../')
 import blackjack as BJ
 import qlearning as QL
 
-MAX_EPISODE = 2550000
-
+MAX_TRAIN_EPISODE =  4500000
+MAX_RUNIN_EPISODE = 1000000
 
 def test_train_ql():
     learning_agent = QL.QLearning()
-    for i in range(1, MAX_EPISODE):
+    for i in range(1, MAX_TRAIN_EPISODE):
         game = BJ.BlackJack()
         status = game.deal()
         step = 0
@@ -59,12 +59,12 @@ def test_train_ql():
             #if(i > 25000):
            #     learning_agent._epsilon = 0.1
 
-    # print_state_table(learning_agent)
+    print_state_table(learning_agent)
     # print("Imprimer la table")
     # for key, value in sorted(learning_agent._Q.items(), key=lambda x: x[0]):
     #    print("{} : {}".format(key, value))
     print(learning_agent._Q);
-    report(play(learning_agent, 1000000))
+    report(play(learning_agent, MAX_RUNIN_EPISODE))
 
 
 def report(score):
@@ -98,6 +98,7 @@ def play(learning_table, episodes):
 
     for i in range(episodes):
         status = game.deal()
+        print("==========")
         if (status is BJ.Status.BLACKJACK):
             win += 1
             # print("BlackJack")
@@ -106,12 +107,13 @@ def play(learning_table, episodes):
         while game.round is None:
             cur_state = game.get_state()
             action = learning_table.get_action(cur_state, False)
+            print("State "+ str(cur_state)+ " choose action "+str(action))
 
             if (action == BJ.Action.HIT):
                 game.hit()
             else:
                 game.stand()
-
+        print("end of game "+str(game.round))
         if game.round == BJ.Round.WIN:
             win += 1
         elif game.round == BJ.Round.TIE:

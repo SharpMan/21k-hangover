@@ -7,24 +7,23 @@ def test_deal():
   game = BJ.BlackJack()
 
   # Test for natural blackjack
-  game.deck = ['2', 'Q', '1', 'A']
+  game.deck = ['2', 'Q', '3', 'A']
   assert(game.deal() == BJ.Status.BLACKJACK)
 
   #Player has 21 total, True for UsableAce and Dealer has an '1' faced-up
-  assert(game.get_state() == (21, True, '1'))
+  assert(game.get_state() == (21, True, 3))
 
   # Test for good hand
-  game.deck = ['3', '1', 'Q', '2']
+  game.deck = ['3', '2', 'Q', '2']
   assert(game.deal() == BJ.Status.GOOD)
-  print(game.get_state())
-  assert (game.get_state() == (3, False, 'Q'))
+  assert (game.get_state() == (4, False, 10))
 
 
 def test_hit():
   game = BJ.BlackJack()
 
   # Test for STAND on 21
-  game.deck = ['1', '4', '2', '5', '1', 'A']
+  game.deck = ['A', '4', '2', '5', '3', 'A']
   game.deal()
   assert(max(game.get_hand()) == 16)
   assert(game.hit() == BJ.Status.GOOD)
@@ -37,7 +36,7 @@ def test_hit():
   assert(max(game.get_hand()) == 21)
 
   # Test for BUST
-  game.deck = ['7', '3', '9', '2', '5', '1', 'A']
+  game.deck = ['7', '3', '9', '2', '5', '2', 'A']
   game.deal()
   assert(max(game.get_hand()) == 16)
   assert(game.hit() == BJ.Status.GOOD)
@@ -56,10 +55,10 @@ def test_count_hand():
   game = BJ.BlackJack()
 
   # Test normal hand
-  hand = ['5', '1']
+  hand = ['5', '2']
   hand_sum = game.count_hand(hand)
   assert(len(hand_sum) == 1)
-  assert(hand_sum[0] == 6)
+  assert(hand_sum[0] == 7)
 
   # Test ace hand
   hand = ['A', 'A']
@@ -77,13 +76,13 @@ def test_count_hand():
   
   # Test all cards hand
   hand = [
-          '1', '2', '3', '4', '5', 
+          '2', '3', '4', '5',
           '6', '7', '8', '9', '10',
           'J', 'Q', 'K', 'A' 
          ]
   hand_sum = game.count_hand(hand)
   assert(len(hand_sum) == 1)
-  assert(hand_sum[0] == 86)
+  assert(hand_sum[0] == 85)
 
 
 def test_dealer_reveal():
@@ -136,7 +135,6 @@ def test_dealer_reveal():
   game.status = BJ.Status.BLACKJACK
   game._dealer_reveal()
   assert(game.round == BJ.Round.TIE)
-
 
 test_deal()
 test_hit()
