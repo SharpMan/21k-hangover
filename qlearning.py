@@ -8,9 +8,9 @@ class QLearning():
 
     def __init__(self):
         self.Q = QRewardTable()
-        self._alpha = .2           #learning rate
-        self._gamma = .9           #discount factor
-        self._epsilon = .2         #exploration probability
+        self._alpha = .1           #learning rate
+        self._gamma = .9         #discount factor
+        self._epsilon = .3       #exploration probability
 
     def get_action(self, current_state):
         if (current_state in self.Q.table and np.random.uniform(0, 1) < self._epsilon):
@@ -26,8 +26,10 @@ class QLearning():
         bonus = 0
         #if new_state in self.Q.table:
         max_arg = max(self.Q.table[new_state], key=self.Q.table[new_state].get)
-        bonus = self._gamma * self.Q.table[new_state][max_arg]
-
+        if old_state == new_state:
+            bonus = 0.0
+        else:
+            bonus = self._gamma * self.Q.table[new_state][max_arg]
         self.Q.table[old_state][action] = cur_reward + (self._alpha * (reward + bonus - cur_reward))
 
     def train(self, episodes):
@@ -35,10 +37,18 @@ class QLearning():
         win  = 0
         tie  = 0
         lose = 0
+        old_epsilon = self._epsilon
+        #self._epsilon = 0.0
         
-        for i in range(episodes):
+        for episode in range(1,episodes+1):
+            if self._epsilon < old_epsilon:
+                self._epsilon -= self._epsilon * (episode / episodes)
+            else:
+                self._epsilon == old_epsilon
+
             status = game.deal()
             if(status is Status.BLACKJACK):
+                win += 1
                 continue
             # Agent turn
             while game.round is None:
@@ -63,6 +73,7 @@ class QLearning():
                 tie += 1
             else:
                 lose += 1
+        self._epsilon = old_epsilon
         return (win, tie, lose)
 
             
@@ -77,9 +88,9 @@ class QLearning():
         for i in range(episodes):
             status = game.deal()
             if(status is Status.BLACKJACK):
-                #print("BlackJack")
+                win += 1
                 continue
-                # Agent turn
+            # Agent turn
             while game.round is None:
                 cur_state = game.get_state()
                 action = self.get_action(cur_state)
