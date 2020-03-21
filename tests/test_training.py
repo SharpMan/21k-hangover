@@ -6,7 +6,7 @@ sys.path.append('../')
 import blackjack as BJ
 import qlearning as QL
 
-MAX_TRAIN_EPISODE =  4500000
+MAX_TRAIN_EPISODE = 4500000
 MAX_RUNIN_EPISODE = 1000000
 
 def test_train_ql():
@@ -22,7 +22,6 @@ def test_train_ql():
         game_history = []
 
         # Agent turn
-
         while (game.round is None):
             # When action  return STAND or BUST the loop should exit
             step += 1
@@ -41,7 +40,7 @@ def test_train_ql():
                     continue
 
             if (game.round == BJ.Round.WIN):
-                reward = 1.5
+                reward = 1
             elif (game.round == BJ.Round.LOSE):
                 reward = -1
             elif (game.round == BJ.Round.TIE):
@@ -50,19 +49,13 @@ def test_train_ql():
                 raise ValueError('Error in handling the game status')
 
             for ele in game_history:
-                #reward_recalculated = reward / (step - ele[3] + 1)
                 if(step == ele[3]):
                     reward_recalculated = reward
                 else:
                     reward_recalculated = 0
                 learning_agent.learn(ele[0], ele[1], ele[2], reward_recalculated)
-            #if(i > 25000):
-           #     learning_agent._epsilon = 0.1
 
     print_state_table(learning_agent)
-    # print("Imprimer la table")
-    # for key, value in sorted(learning_agent._Q.items(), key=lambda x: x[0]):
-    #    print("{} : {}".format(key, value))
     print(learning_agent._Q);
     report(play(learning_agent, MAX_RUNIN_EPISODE))
 
@@ -98,22 +91,17 @@ def play(learning_table, episodes):
 
     for i in range(episodes):
         status = game.deal()
-        print("==========")
         if (status is BJ.Status.BLACKJACK):
             win += 1
-            # print("BlackJack")
             continue
-            # Agent turn
         while game.round is None:
             cur_state = game.get_state()
             action = learning_table.get_action(cur_state, False)
-            print("State "+ str(cur_state)+ " choose action "+str(action))
 
             if (action == BJ.Action.HIT):
                 game.hit()
             else:
                 game.stand()
-        print("end of game "+str(game.round))
         if game.round == BJ.Round.WIN:
             win += 1
         elif game.round == BJ.Round.TIE:
